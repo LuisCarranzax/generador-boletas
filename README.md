@@ -1,12 +1,10 @@
 # Generador Corporativo de Boletas de Venta (PDF)
 
-Sistema web moderno, liviano y profesional diseñado para la emisión, gestión y exportación rápida de **Boletas de Venta de Servicios** en formato PDF. Desarrollado en **React 19 + Vite** con arquitectura **MVC (Modelo-Vista-Controlador)**.
-
----
+## Sistema web moderno, liviano y profesional diseñado para la emisión, gestión y exportación rápida de **Boletas de Venta de Servicios** en formato PDF.
 
 ## 🎯 Finalidad del Proyecto
 
-La finalidad de esta aplicación es ofrecer a profesionales independientes, pequeñas empresas y emprendedores un sistema libre de base de datos para generar comprobantes de venta formales y pulidos de manera inmediata. 
+La finalidad de esta aplicación es ofrecer un sistema libre de base de datos para generar comprobantes de venta de manera inmediata.
 
 Cualquier persona puede clonar el proyecto, personalizar los datos corporativos de su empresa (RUC, logo/nombre, cuentas bancarias para transferencias y colores institucionales) y comenzar a emitir boletas sin depender de servidores ni configuraciones complejas.
 
@@ -14,7 +12,7 @@ Cualquier persona puede clonar el proyecto, personalizar los datos corporativos 
 
 ## ✨ Características Principales
 
-- **Registro de Cliente / Receptor**: Formulario dinámico con validación de campos obligatorios (*Nombre/Razón Social, DNI/RUC, Dirección, Teléfono, Fecha de Emisión y Serie/Número de Boleta*).
+- **Registro de Cliente / Receptor**: Formulario dinámico con validación de campos obligatorios (_Nombre/Razón Social, DNI/RUC, Dirección, Teléfono, Fecha de Emisión y Serie/Número de Boleta_).
 - **Servicios e Ítems Dinámicos**: Permite agregar y eliminar renglones de servicios según las necesidades de cada venta, realizando el cálculo automático de sub-totales y total general en tiempo real.
 - **Panel de Configuración de Empresa**: Accesible desde la barra superior de la aplicación para editar:
   - Nombre o Razón Social de la Empresa
@@ -24,46 +22,12 @@ Cualquier persona puede clonar el proyecto, personalizar los datos corporativos 
   - Teléfono, Email, Sitio Web y Dirección Fiscal
   - Lista dinámica de cuentas bancarias y métodos de pago (BCP, BBVA, Yape/Plin, Interbank, etc.)
 - **Personalización Visual de la Boleta**:
-  - Paletas de colores corporativas predefinidas (*Azul Corporativo, Verde Esmeralda, Índigo Ejecutivo, Carmesí Elegante, Carbón*).
+  - Paletas de colores corporativas predefinidas (_Azul Corporativo, Verde Esmeralda, Índigo Ejecutivo, Carmesí Elegante, Carbón_).
   - Selectores de color hexadecimal libre para personalizar la cabecera del documento PDF y los acentos visuales.
 - **Previsualización Interactiva del PDF**: Permite inspeccionar el documento PDF final dentro de un modal en tiempo real antes de descargarlo.
 - **Exportación a PDF Profesional**: Generación de PDF nítido mediante `jsPDF` y `jspdf-autotable`, con márgenes auto-ajustables y formato contable limpio.
 - **Persistencia Local**: Guardado automático de la configuración en `localStorage` (sin necesidad de base de datos o backend).
 - **Ejecución Directa en 1 Clic**: Incluye el archivo ejecutable `Ejecutar.bat` para iniciar el entorno en clase o demostraciones sin abrir la consola manualmente.
-
----
-
-## 🏗️ Arquitectura del Proyecto (MVC)
-
-El código fuente en la carpeta `src/` sigue estrictamente el patrón **Modelo-Vista-Controlador**:
-
-```
-generador-boletas/
-├── Ejecutar.bat                # Script de inicio rápido en 1 clic
-├── README.md                   # Documentación oficial del proyecto
-├── package.json
-├── vite.config.js
-└── src/
-    ├── models/                 # MODELOS (Lógica de negocio y persistencia)
-    │   ├── businessModel.js    # Carga/guardado en localStorage, paletas y RGB
-    │   ├── receiptModel.js     # Definición de estructuras y cálculos contables
-    │   └── pdfModel.js         # Generador de documentos PDF con jsPDF
-    ├── controllers/            # CONTROLADORES
-    │   └── useReceiptController.js # Custom Hook controlador de estado y eventos
-    ├── views/                  # VISTAS (Componentes UI)
-    │   ├── components/
-    │   │   ├── NavbarView.jsx         # Barra superior con branding y botón de configuración
-    │   │   ├── HeaderView.jsx         # Resumen de métricas e identidad de la empresa
-    │   │   ├── ClientFormView.jsx     # Formulario de datos del cliente
-    │   │   ├── ServicesTableView.jsx  # Tabla dinámica de servicios prestados
-    │   │   ├── ReceiptSummaryView.jsx # Resumen de totales y métodos de abono
-    │   │   ├── PDFPreviewModal.jsx    # Modal de previsualización en vivo del PDF
-    │   │   └── BusinessConfigModal.jsx# Panel modal de configuración del negocio
-    │   └── MainView.jsx               # Vista orquestadora principal
-    ├── App.jsx
-    ├── index.css               # Sistema de diseño CSS corporativo
-    └── main.jsx
-```
 
 ---
 
@@ -76,9 +40,9 @@ Antes de ejecutar el proyecto, asegúrese de contar con alguno de los siguientes
 
 ---
 
-## 🚀 Guía de Instalación y Ejecución
+## Ejecución
 
-### Opción A: Ejecución Directa en 1 Clic (Recomendado para clases/demo)
+### Ejecución Directa en 1 Clic
 
 1. Clone el repositorio en su computadora:
    ```bash
@@ -90,9 +54,10 @@ Antes de ejecutar el proyecto, asegúrese de contar con alguno de los siguientes
 
 ---
 
-### Opción B: Ejecución por Consola / Terminal
+### Ejecución por Consola / Terminal
 
 1. Abra su consola en la carpeta del proyecto y ejecute:
+
    ```bash
    # Con npm
    npm install
@@ -102,10 +67,5 @@ Antes de ejecutar el proyecto, asegúrese de contar con alguno de los siguientes
    bun install
    bun dev
    ```
+
 2. Ingrese a la dirección indicada en la consola (normalmente `http://localhost:5173`).
-
----
-
-## 📄 Licencia
-
-Este proyecto fue desarrollado con fines educativos y de libre adopción para emprendedores y desarrolladores. Siéntase libre de utilizarlo, modificarlo y adaptarlo a su propio negocio.
