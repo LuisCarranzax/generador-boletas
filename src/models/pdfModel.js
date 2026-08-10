@@ -1,21 +1,23 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { BUSINESS_INFO } from './businessModel';
+import { loadBusinessInfo, hexToRgb } from './businessModel';
 import { calculateReceiptTotal } from './receiptModel';
 
 /**
- * Genera el documento PDF de la boleta de venta.
+ * Genera el documento PDF de la boleta de venta utilizando la configuración dinámica de la empresa.
  * @param {Object} client Datos del cliente.
  * @param {Array} services Lista de ítems/servicios.
+ * @param {Object} businessInfo Configuración de la empresa (opcional).
  * @returns {jsPDF} Instancia del documento jsPDF generado.
  */
-export const buildReceiptPDF = (client, services) => {
+export const buildReceiptPDF = (client, services, businessInfo = null) => {
+  const info = businessInfo || loadBusinessInfo();
   const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
   const totalAmount = calculateReceiptTotal(services);
 
-  // Paleta de colores corporativos en RGB
-  const primaryColor = [15, 23, 42];    // Dark Slate Blue / Navy
-  const accentColor = [37, 99, 235];    // Executive Royal Blue
+  // Conversión dinámica de colores hexadecimales a RGB para jsPDF
+  const primaryColor = hexToRgb(info.primaryColor, [15, 23, 42]);
+  const accentColor = hexToRgb(info.accentColor, [37, 99, 235]);
   const secondaryColor = [71, 85, 105]; // Slate Muted
   const lightBg = [248, 250, 252];      // Light Gray/Blue
 
@@ -31,13 +33,20 @@ export const buildReceiptPDF = (client, services) => {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(13);
-  doc.text(BUSINESS_INFO.name, 14, 13, { maxWidth: 120 });
+  doc.text(info.name || 'EMPRESA PRESTADORA DE SERVICIOS', 14, 13, { maxWidth: 120 });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(226, 232, 240);
-  doc.text(`RUC: ${BUSINESS_INFO.ruc} | Tel: ${BUSINESS_INFO.phone} | Email: ${BUSINESS_INFO.email}`, 14, 22, { maxWidth: 120 });
-  doc.text(`Dirección: ${BUSINESS_INFO.address}`, 14, 27, { maxWidth: 120 });
+  
+  const rucText = info.ruc ? `RUC: ${info.ruc}` : '';
+  const phoneText = info.phone ? ` | Tel: ${info.phone}` : '';
+  const emailText = info.email ? ` | Email: ${info.email}` : '';
+  doc.text(`${rucText}${phoneText}${emailText}`, 14, 22, { maxWidth: 120 });
+  
+  if (info.address) {
+    doc.text(`Dirección: ${info.address}`, 14, 27, { maxWidth: 120 });
+  }
 
   // Tarjeta flotante del Número de Boleta
   doc.setDrawColor(...accentColor);
@@ -148,33 +157,40 @@ export const buildReceiptPDF = (client, services) => {
   doc.setFontSize(11);
   doc.text(`S/ ${totalAmount.toFixed(2)}`, 191, finalY + 9, { align: 'right' });
 
-  // Sección de Información Bancaria para Depósitos
-  const bankY = finalY + 22;
-  doc.setFillColor(...lightBg);
-  doc.roundedRect(14, bankY, 182, 38, 2, 2, 'F');
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(14, bankY, 182, 38, 2, 2, 'D');
+  // Sección de Información Bancaria para Depósitos (Dinámica segun cantidad de cuentas)
+  const bankAccounts = info.bankAccounts || [];
+  if (bankAccounts.length > 0) {
+    const bankSectionHeight = 12 + (bankAccounts.length * 6);
+    const bankY = finalY + 22;
+    
+    doc.setFillColor(...lightBg);
+    doc.roundedRect(14, bankY, 182, bankSectionHeight, 2, 2, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(14, bankY, 182, bankSectionHeight, 2, 2, 'D');
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.setTextColor(...accentColor);
-  doc.text('INFORMACIÓN PARA DEPÓSITOS Y TRANSFERENCIAS BANCARIAS', 18, bankY + 7);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...accentColor);
+    doc.text('INFORMACIÓN PARA DEPÓSITOS Y TRANSFERENCIAS BANCARIAS', 18, bankY + 7);
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(...secondaryColor);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...secondaryColor);
 
-  let currentBankY = bankY + 14;
-  BUSINESS_INFO.bankAccounts.forEach((acc) => {
-    doc.text(`• ${acc.bank}: N° ${acc.account} | CCI: ${acc.cci}`, 18, currentBankY);
-    currentBankY += 6;
-  });
+    let currentBankY = bankY + 13;
+    bankAccounts.forEach((acc) => {
+      const cciText = acc.cci ? ` | CCI: ${acc.cci}` : '';
+      doc.text(`• ${acc.bank || 'Banco'}: N° ${acc.account || '---'}${cciText}`, 18, currentBankY);
+      currentBankY += 6;
+    });
+  }
 
   // Pie de Página Institucional
   doc.setFontSize(7.5);
   doc.setTextColor(148, 163, 184);
   doc.text('Gracias por su preferencia. Documento emitido para control de prestación de servicios prestados.', 105, 285, { align: 'center' });
-  doc.text(`${BUSINESS_INFO.website} | Generado por Sistema Corporativo de Boletas`, 105, 289, { align: 'center' });
+  const footerWeb = info.website ? `${info.website} | ` : '';
+  doc.text(`${footerWeb}Generado por Sistema Corporativo de Boletas`, 105, 289, { align: 'center' });
 
   return doc;
 };
@@ -182,8 +198,8 @@ export const buildReceiptPDF = (client, services) => {
 /**
  * Descarga el archivo PDF en la computadora del cliente.
  */
-export const downloadReceiptPDF = (client, services) => {
-  const doc = buildReceiptPDF(client, services);
+export const downloadReceiptPDF = (client, services, businessInfo = null) => {
+  const doc = buildReceiptPDF(client, services, businessInfo);
   const safeClientName = (client.name || 'Cliente').replace(/\s+/g, '_');
   const filename = `Boleta_${client.receiptNumber || 'B001'}_${safeClientName}.pdf`;
   doc.save(filename);
@@ -192,7 +208,7 @@ export const downloadReceiptPDF = (client, services) => {
 /**
  * Genera una URL Blob para la vista previa del PDF en un iframe o modal.
  */
-export const getReceiptPDFBlobUrl = (client, services) => {
-  const doc = buildReceiptPDF(client, services);
+export const getReceiptPDFBlobUrl = (client, services, businessInfo = null) => {
+  const doc = buildReceiptPDF(client, services, businessInfo);
   return doc.output('bloburl');
 };

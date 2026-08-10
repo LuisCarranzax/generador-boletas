@@ -6,6 +6,11 @@ import {
   validateReceiptData
 } from '../models/receiptModel';
 import {
+  loadBusinessInfo,
+  saveBusinessInfo,
+  resetBusinessInfo
+} from '../models/businessModel';
+import {
   downloadReceiptPDF,
   getReceiptPDFBlobUrl
 } from '../models/pdfModel';
@@ -13,6 +18,8 @@ import {
 export const useReceiptController = () => {
   const [client, setClient] = useState(createInitialClientState);
   const [services, setServices] = useState([createInitialServiceItem()]);
+  const [businessInfo, setBusinessInfo] = useState(loadBusinessInfo);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [notification, setNotification] = useState(null);
@@ -23,7 +30,7 @@ export const useReceiptController = () => {
     setClient(prev => ({ ...prev, [name]: value }));
   };
 
-  // Manejo de servicios
+  // Manejo de servicios prestados
   const handleServiceChange = (id, field, value) => {
     setServices(prev => prev.map(item => {
       if (item.id === id) {
@@ -46,6 +53,30 @@ export const useReceiptController = () => {
     setServices(prev => prev.filter(item => item.id !== id));
   };
 
+  // Gestión de Configuración de Empresa
+  const handleOpenConfig = () => setIsConfigOpen(true);
+  const handleCloseConfig = () => setIsConfigOpen(false);
+
+  const handleSaveBusinessInfo = (updatedInfo) => {
+    saveBusinessInfo(updatedInfo);
+    setBusinessInfo(updatedInfo);
+    setIsConfigOpen(false);
+    setNotification({
+      type: 'success',
+      message: 'Configuración de empresa y apariencia visual guardadas correctamente.'
+    });
+  };
+
+  const handleResetBusinessInfo = () => {
+    const resetData = resetBusinessInfo();
+    setBusinessInfo(resetData);
+    setIsConfigOpen(false);
+    setNotification({
+      type: 'info',
+      message: 'Configuración de empresa restablecida a los valores por defecto.'
+    });
+  };
+
   // Totales y validaciones computadas
   const totalAmount = useMemo(() => {
     return calculateReceiptTotal(services);
@@ -55,7 +86,7 @@ export const useReceiptController = () => {
     return validateReceiptData(client, services);
   }, [client, services]);
 
-  // Acciones de PDF
+  // Acciones de PDF con la configuración dinámica de la empresa
   const handleDownloadPDF = () => {
     if (!validation.isValid) {
       setNotification({
@@ -65,7 +96,7 @@ export const useReceiptController = () => {
       return;
     }
     try {
-      downloadReceiptPDF(client, services);
+      downloadReceiptPDF(client, services, businessInfo);
       setNotification({
         type: 'success',
         message: `Boleta ${client.receiptNumber} exportada exitosamente a PDF.`
@@ -88,7 +119,7 @@ export const useReceiptController = () => {
       return;
     }
     try {
-      const url = getReceiptPDFBlobUrl(client, services);
+      const url = getReceiptPDFBlobUrl(client, services, businessInfo);
       setPreviewUrl(url);
       setIsPreviewOpen(true);
     } catch (err) {
@@ -109,7 +140,7 @@ export const useReceiptController = () => {
     setServices([createInitialServiceItem()]);
     setNotification({
       type: 'info',
-      message: 'Formulario reiniciado para una nueva boleta.'
+      message: 'Formulario de cliente reiniciado para una nueva boleta.'
     });
   };
 
@@ -120,6 +151,8 @@ export const useReceiptController = () => {
   return {
     client,
     services,
+    businessInfo,
+    isConfigOpen,
     totalAmount,
     validation,
     isPreviewOpen,
@@ -129,6 +162,10 @@ export const useReceiptController = () => {
     handleServiceChange,
     addServiceRow,
     removeServiceRow,
+    handleOpenConfig,
+    handleCloseConfig,
+    handleSaveBusinessInfo,
+    handleResetBusinessInfo,
     handleDownloadPDF,
     handleOpenPreview,
     handleClosePreview,

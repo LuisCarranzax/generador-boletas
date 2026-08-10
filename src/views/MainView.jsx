@@ -6,11 +6,14 @@ import { ClientFormView } from './components/ClientFormView';
 import { ServicesTableView } from './components/ServicesTableView';
 import { ReceiptSummaryView } from './components/ReceiptSummaryView';
 import { PDFPreviewModal } from './components/PDFPreviewModal';
+import { BusinessConfigModal } from './components/BusinessConfigModal';
 
 export const MainView = () => {
   const {
     client,
     services,
+    businessInfo,
+    isConfigOpen,
     totalAmount,
     validation,
     isPreviewOpen,
@@ -20,6 +23,10 @@ export const MainView = () => {
     handleServiceChange,
     addServiceRow,
     removeServiceRow,
+    handleOpenConfig,
+    handleCloseConfig,
+    handleSaveBusinessInfo,
+    handleResetBusinessInfo,
     handleDownloadPDF,
     handleOpenPreview,
     handleClosePreview,
@@ -29,7 +36,11 @@ export const MainView = () => {
 
   return (
     <div className="app-shell">
-      <NavbarView onReset={handleResetForm} />
+      <NavbarView
+        businessInfo={businessInfo}
+        onReset={handleResetForm}
+        onOpenConfig={handleOpenConfig}
+      />
 
       <div className="container main-content-wrapper">
         {notification && (
@@ -40,6 +51,7 @@ export const MainView = () => {
         )}
 
         <HeaderView
+          businessInfo={businessInfo}
           receiptNumber={client.receiptNumber}
           itemCount={services.length}
           totalAmount={totalAmount}
@@ -59,6 +71,7 @@ export const MainView = () => {
           />
 
           <ReceiptSummaryView
+            businessInfo={businessInfo}
             totalAmount={totalAmount}
             validation={validation}
             onDownloadPDF={handleDownloadPDF}
@@ -67,7 +80,7 @@ export const MainView = () => {
         </main>
 
         <footer className="app-footer">
-          <p>© {new Date().getFullYear()} SISTEC - Sistema de Gestión de Comprobantes de Venta. Todos los derechos reservados.</p>
+          <p>© {new Date().getFullYear()} {businessInfo?.shortName || businessInfo?.name} - Sistema de Gestión de Comprobantes. Todos los derechos reservados.</p>
         </footer>
       </div>
 
@@ -76,6 +89,14 @@ export const MainView = () => {
         previewUrl={previewUrl}
         onClose={handleClosePreview}
         onDownload={handleDownloadPDF}
+      />
+
+      <BusinessConfigModal
+        isOpen={isConfigOpen}
+        businessInfo={businessInfo}
+        onClose={handleCloseConfig}
+        onSave={handleSaveBusinessInfo}
+        onReset={handleResetBusinessInfo}
       />
     </div>
   );

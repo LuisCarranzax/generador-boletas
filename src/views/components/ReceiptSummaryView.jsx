@@ -1,16 +1,18 @@
 import React from 'react';
-import { BUSINESS_INFO } from '../../models/businessModel';
 
 export const ReceiptSummaryView = ({
+  businessInfo,
   totalAmount,
   validation,
   onDownloadPDF,
   onOpenPreview
 }) => {
+  const bankAccounts = businessInfo?.bankAccounts || [];
+
   return (
     <section className="card summary-card">
       <div className="summary-layout">
-        {/* Información bancaria corporativa */}
+        {/* Información bancaria corporativa dinámica */}
         <div className="bank-info-box">
           <h3>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -19,15 +21,19 @@ export const ReceiptSummaryView = ({
             </svg>
             Métodos de Pago & Cuentas Oficiales
           </h3>
-          <ul className="bank-list">
-            {BUSINESS_INFO.bankAccounts.map((acc, index) => (
-              <li key={index}>
-                <span className="bank-name">{acc.bank}:</span>
-                <span className="bank-acc">{acc.account}</span>
-                {acc.cci && <span className="bank-cci">CCI: {acc.cci}</span>}
-              </li>
-            ))}
-          </ul>
+          {bankAccounts.length === 0 ? (
+            <p className="bank-empty-text">Sin cuentas registradas. Configure sus números en el panel de configuración.</p>
+          ) : (
+            <ul className="bank-list">
+              {bankAccounts.map((acc, index) => (
+                <li key={index}>
+                  <span className="bank-name">{acc.bank || 'Banco'}:</span>
+                  <span className="bank-acc">{acc.account || '---'}</span>
+                  {acc.cci && <span className="bank-cci">CCI: {acc.cci}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Totales y Acciones Principales */}
