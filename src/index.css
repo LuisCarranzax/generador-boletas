@@ -1028,6 +1028,113 @@ input[type="color"]::-webkit-color-swatch {
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+/* Labels con Checkbox para Campos Opcionales */
+.label-with-checkbox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.checkbox-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--brand-blue);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkbox-toggle input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--brand-blue);
+}
+
+.input-disabled-placeholder {
+  background-color: #f1f5f9;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.bank-owner {
+  color: var(--primary-slate);
+  font-weight: 500;
+}
+
+/* Modales de Confirmación Anti-Pérdida de Datos */
+.confirm-modal {
+  max-width: 480px;
+  height: auto;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.confirm-header {
+  padding: 20px 24px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.confirm-header.warning .confirm-icon {
+  background-color: var(--warning-bg);
+  color: var(--warning);
+}
+
+.confirm-header.danger .confirm-icon {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+}
+
+.confirm-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-navy);
+}
+
+.confirm-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirm-body {
+  padding: 0 24px 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.confirm-footer {
+  padding: 14px 24px;
+  background-color: #f8fafc;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-danger-solid {
+  background-color: var(--danger);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-danger-solid:hover {
+  background-color: #dc2626;
+}
+
 /* Footer */
 .app-footer {
   text-align: center;

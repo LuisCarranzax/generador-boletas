@@ -7,6 +7,7 @@ import { ServicesTableView } from './components/ServicesTableView';
 import { ReceiptSummaryView } from './components/ReceiptSummaryView';
 import { PDFPreviewModal } from './components/PDFPreviewModal';
 import { BusinessConfigModal } from './components/BusinessConfigModal';
+import { ConfirmModal } from './components/ConfirmModal';
 
 export const MainView = () => {
   const {
@@ -14,6 +15,7 @@ export const MainView = () => {
     services,
     businessInfo,
     isConfigOpen,
+    isConfirmResetOpen,
     totalAmount,
     validation,
     isPreviewOpen,
@@ -30,7 +32,9 @@ export const MainView = () => {
     handleDownloadPDF,
     handleOpenPreview,
     handleClosePreview,
-    handleResetForm,
+    handlePromptResetForm,
+    handleConfirmResetForm,
+    handleCancelResetForm,
     clearNotification
   } = useReceiptController();
 
@@ -38,7 +42,7 @@ export const MainView = () => {
     <div className="app-shell">
       <NavbarView
         businessInfo={businessInfo}
-        onReset={handleResetForm}
+        onReset={handlePromptResetForm}
         onOpenConfig={handleOpenConfig}
       />
 
@@ -97,6 +101,17 @@ export const MainView = () => {
         onClose={handleCloseConfig}
         onSave={handleSaveBusinessInfo}
         onReset={handleResetBusinessInfo}
+      />
+
+      <ConfirmModal
+        isOpen={isConfirmResetOpen}
+        title="Reiniciar Boleta"
+        message="¿Está seguro de iniciar una nueva boleta? Se borrarán los datos ingresados del cliente y el detalle de servicios actual."
+        confirmLabel="Sí, Nueva Boleta"
+        cancelLabel="Cancelar"
+        variant="warning"
+        onConfirm={handleConfirmResetForm}
+        onCancel={handleCancelResetForm}
       />
     </div>
   );

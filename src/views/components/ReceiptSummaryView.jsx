@@ -30,6 +30,7 @@ export const ReceiptSummaryView = ({
                   <span className="bank-name">{acc.bank || 'Banco'}:</span>
                   <span className="bank-acc">{acc.account || '---'}</span>
                   {acc.cci && <span className="bank-cci">CCI: {acc.cci}</span>}
+                  {acc.owner && <span className="bank-owner">Titular: {acc.owner}</span>}
                 </li>
               ))}
             </ul>

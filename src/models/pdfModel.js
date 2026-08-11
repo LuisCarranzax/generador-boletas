@@ -39,13 +39,24 @@ export const buildReceiptPDF = (client, services, businessInfo = null) => {
   doc.setFontSize(8);
   doc.setTextColor(226, 232, 240);
   
-  const rucText = info.ruc ? `RUC: ${info.ruc}` : '';
-  const phoneText = info.phone ? ` | Tel: ${info.phone}` : '';
-  const emailText = info.email ? ` | Email: ${info.email}` : '';
-  doc.text(`${rucText}${phoneText}${emailText}`, 14, 22, { maxWidth: 120 });
+  // Construcción limpia de la línea de datos (omite campos desactivados sin imprimir etiquetas en blanco)
+  const headerParts = [];
+  if (info.hasRuc !== false && info.ruc && info.ruc.trim() !== '') {
+    headerParts.push(`RUC: ${info.ruc.trim()}`);
+  }
+  if (info.phone && info.phone.trim() !== '') {
+    headerParts.push(`Tel: ${info.phone.trim()}`);
+  }
+  if (info.hasEmail !== false && info.email && info.email.trim() !== '') {
+    headerParts.push(`Email: ${info.email.trim()}`);
+  }
+
+  if (headerParts.length > 0) {
+    doc.text(headerParts.join(' | '), 14, 21, { maxWidth: 120 });
+  }
   
-  if (info.address) {
-    doc.text(`Dirección: ${info.address}`, 14, 27, { maxWidth: 120 });
+  if (info.address && info.address.trim() !== '') {
+    doc.text(`Dirección: ${info.address.trim()}`, 14, 26, { maxWidth: 120 });
   }
 
   // Tarjeta flotante del Número de Boleta
@@ -157,40 +168,44 @@ export const buildReceiptPDF = (client, services, businessInfo = null) => {
   doc.setFontSize(11);
   doc.text(`S/ ${totalAmount.toFixed(2)}`, 191, finalY + 9, { align: 'right' });
 
-  // Sección de Información Bancaria para Depósitos (Dinámica segun cantidad de cuentas)
+  // Sección de Información Bancaria para Depósitos (Compacta y ajustada a los datos)
   const bankAccounts = info.bankAccounts || [];
   if (bankAccounts.length > 0) {
     const bankSectionHeight = 12 + (bankAccounts.length * 6);
     const bankY = finalY + 22;
     
+    
     doc.setFillColor(...lightBg);
-    doc.roundedRect(14, bankY, 182, bankSectionHeight, 2, 2, 'F');
+    doc.roundedRect(14, bankY, 135, bankSectionHeight, 2, 2, 'F');
     doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(14, bankY, 182, bankSectionHeight, 2, 2, 'D');
+    doc.roundedRect(14, bankY, 135, bankSectionHeight, 2, 2, 'D');
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setTextColor(...accentColor);
-    doc.text('INFORMACIÓN PARA DEPÓSITOS Y TRANSFERENCIAS BANCARIAS', 18, bankY + 7);
+    doc.text('DEPÓSITOS Y TRANSFERENCIAS BANCARIAS', 18, bankY + 6.5);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
+    doc.setFontSize(7.5);
     doc.setTextColor(...secondaryColor);
 
-    let currentBankY = bankY + 13;
+    let currentBankY = bankY + 12;
     bankAccounts.forEach((acc) => {
-      const cciText = acc.cci ? ` | CCI: ${acc.cci}` : '';
-      doc.text(`• ${acc.bank || 'Banco'}: N° ${acc.account || '---'}${cciText}`, 18, currentBankY);
-      currentBankY += 6;
+      const cciText = acc.cci && acc.cci.trim() !== '' ? ` | CCI: ${acc.cci.trim()}` : '';
+      const ownerText = acc.owner && acc.owner.trim() !== '' ? ` | Titular: ${acc.owner.trim()}` : '';
+      doc.text(`• ${acc.bank || 'Banco'}: N° ${acc.account || '---'}${cciText}${ownerText}`, 18, currentBankY);
+      currentBankY += 5.5;
     });
   }
 
   // Pie de Página Institucional
   doc.setFontSize(7.5);
   doc.setTextColor(148, 163, 184);
-  doc.text('Gracias por su preferencia. Documento emitido para control de prestación de servicios prestados.', 105, 285, { align: 'center' });
-  const footerWeb = info.website ? `${info.website} | ` : '';
-  doc.text(`${footerWeb}Generado por Sistema Corporativo de Boletas`, 105, 289, { align: 'center' });
+  doc.text('Gracias por su preferencia.', 105, 284, { align: 'center' });
+  
+  if (info.hasWebsite !== false && info.website && info.website.trim() !== '') {
+    doc.text(`${info.website.trim()}`, 105, 288, { align: 'center' });
+  } 
 
   return doc;
 };

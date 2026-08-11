@@ -11,7 +11,7 @@ export const ClientFormView = ({ client, onChange }) => {
           </svg>
         </div>
         <div>
-          <h2>Datos del Cliente / Receptor</h2>
+          <h2>Datos del Cliente</h2>
           <p className="card-subtitle">Ingrese los datos de facturación del cliente receptor</p>
         </div>
       </div>

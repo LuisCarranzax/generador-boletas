@@ -37,17 +37,20 @@ export const DEFAULT_BUSINESS_INFO = {
   name: "Servicios Integrales & Soluciones Tecnológicas S.A.C.",
   shortName: "SISTEC",
   slogan: "Soluciones Tecnológicas & Servicios Profesionales a tu Medida",
+  hasRuc: true,
   ruc: "20601234567",
   address: "Av. Principal 456, Oficina 302, San Isidro, Lima",
   phone: "+51 987 654 321",
+  hasEmail: true,
   email: "contacto@sistecperu.com",
+  hasWebsite: true,
   website: "www.sistecperu.com",
   primaryColor: "#0f172a",
   accentColor: "#2563eb",
   bankAccounts: [
-    { bank: "BCP Soles", account: "191-12345678-0-12", cci: "002-191-0012345678012-50" },
-    { bank: "BBVA Soles", account: "0011-0123-0100045678", cci: "011-123-000100045678-14" },
-    { bank: "Yape / Plin", account: "+51 987 654 321", cci: "A nombre del titular" }
+    { bank: "BCP Soles", account: "191-12345678-0-12", cci: "002-191-0012345678012-50", owner: "SISTEC S.A.C." },
+    { bank: "BBVA Soles", account: "0011-0123-0100045678", cci: "011-123-000100045678-14", owner: "SISTEC S.A.C." },
+    { bank: "Yape / Plin", account: "+51 987 654 321", cci: "", owner: "Titular Representante" }
   ]
 };
 
@@ -59,7 +62,13 @@ export const loadBusinessInfo = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      return { ...DEFAULT_BUSINESS_INFO, ...parsed };
+      return {
+        ...DEFAULT_BUSINESS_INFO,
+        ...parsed,
+        hasRuc: parsed.hasRuc !== undefined ? parsed.hasRuc : Boolean(parsed.ruc),
+        hasEmail: parsed.hasEmail !== undefined ? parsed.hasEmail : Boolean(parsed.email),
+        hasWebsite: parsed.hasWebsite !== undefined ? parsed.hasWebsite : Boolean(parsed.website)
+      };
     }
   } catch (e) {
     console.error("Error al cargar la configuración de empresa:", e);

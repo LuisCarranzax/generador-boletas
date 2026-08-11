@@ -3,8 +3,11 @@
  */
 
 export const generateReceiptNumber = () => {
-  const randomNum = Math.floor(100000 + Math.random() * 900000);
-  return `B001-${randomNum}`;
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `B${year}-${month}${day}`;
 };
 
 export const createInitialClientState = () => ({

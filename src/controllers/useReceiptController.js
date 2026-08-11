@@ -21,6 +21,7 @@ export const useReceiptController = () => {
   const [businessInfo, setBusinessInfo] = useState(loadBusinessInfo);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [notification, setNotification] = useState(null);
 
@@ -135,13 +136,30 @@ export const useReceiptController = () => {
     }
   };
 
-  const handleResetForm = () => {
+  // Manejo de reinicio del formulario con diálogo de confirmación
+  const handlePromptResetForm = () => {
+    const hasData = client.name || client.documentNumber || client.address || client.phone || 
+      services.some(s => s.description || s.unitPrice > 0);
+    
+    if (hasData) {
+      setIsConfirmResetOpen(true);
+    } else {
+      handleConfirmResetForm();
+    }
+  };
+
+  const handleConfirmResetForm = () => {
     setClient(createInitialClientState());
     setServices([createInitialServiceItem()]);
+    setIsConfirmResetOpen(false);
     setNotification({
       type: 'info',
       message: 'Formulario de cliente reiniciado para una nueva boleta.'
     });
+  };
+
+  const handleCancelResetForm = () => {
+    setIsConfirmResetOpen(false);
   };
 
   const clearNotification = () => {
@@ -153,6 +171,7 @@ export const useReceiptController = () => {
     services,
     businessInfo,
     isConfigOpen,
+    isConfirmResetOpen,
     totalAmount,
     validation,
     isPreviewOpen,
@@ -169,7 +188,9 @@ export const useReceiptController = () => {
     handleDownloadPDF,
     handleOpenPreview,
     handleClosePreview,
-    handleResetForm,
+    handlePromptResetForm,
+    handleConfirmResetForm,
+    handleCancelResetForm,
     clearNotification
   };
 };
